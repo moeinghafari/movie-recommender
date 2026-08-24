@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Large dataset
+data/*.csv
+data/*.parquet
+
+# Large machine learning model files
+*.pkl
+*.npy
+
+# Temporary / test files
+test.py
+test_sparse.py
+check_model_size.py
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
