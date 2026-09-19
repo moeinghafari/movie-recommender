@@ -1,23 +1,53 @@
-import joblib
 import numpy as np
+import pandas as pd
 import time
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-
-print("در حال بارگذاری TF-IDF...")
+print("در حال بارگذاری دیتاست...")
 
 start = time.time()
 
-tfidf_matrix = joblib.load(
-    "tfidf_matrix.pkl"
-)
+movies = pd.read_parquet("data/movies.parquet")
 
 print(
-    f"بارگذاری انجام شد: "
+    f"دیتاست بارگذاری شد: "
     f"{time.time() - start:.2f} ثانیه"
 )
 
+print("تعداد فیلم‌ها:", len(movies))
 
-print("در حال ذخیره‌سازی با فرمت سریع...")
+
+movies["tags"] = (
+    movies["tags"]
+    .fillna("")
+    .astype(str)
+)
+
+
+print("در حال ساخت TF-IDF...")
+
+start = time.time()
+
+tfidf = TfidfVectorizer(
+    stop_words="english",
+    max_features=10000,
+    dtype=np.float32,
+    sublinear_tf=True
+)
+
+tfidf_matrix = tfidf.fit_transform(
+    movies["tags"]
+)
+
+print(
+    f"TF-IDF ساخته شد: "
+    f"{time.time() - start:.2f} ثانیه"
+)
+
+print("Shape:", tfidf_matrix.shape)
+
+
+print("در حال ذخیره‌سازی...")
 
 
 np.save(
@@ -36,19 +66,11 @@ np.save(
 )
 
 
-with open(
-    "tfidf_shape.txt",
-    "w"
-) as f:
-
+with open("tfidf_shape.txt", "w") as f:
     f.write(
-        f"{tfidf_matrix.shape[0]},{tfidf_matrix.shape[1]}"
+        f"{tfidf_matrix.shape[0]},"
+        f"{tfidf_matrix.shape[1]}"
     )
 
 
 print("تبدیل با موفقیت انجام شد.")
-
-print(
-    "Shape:",
-    tfidf_matrix.shape
-)
